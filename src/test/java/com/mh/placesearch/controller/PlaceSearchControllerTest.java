@@ -34,6 +34,11 @@ class PlaceSearchControllerTest {
     }
 
     @Test
+    void searchByKeyword_whenNormalGubchang_shouldReturn200() {
+        RestAssured.given().queryParam("q", "곱창").when().get("/v1/place").then().statusCode(200);
+    }
+
+    @Test
     void searchByKeyword_whenNoQueryParam_shouldReturn400() {
         RestAssured.given().when().get("/v1/place").then().statusCode(400);
     }

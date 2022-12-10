@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1")
@@ -22,9 +24,19 @@ public class PlaceSearchController {
 
     @GetMapping("/place")
     PlaceSearchResultDto searchByKeyword(@RequestParam("q") String query) {
+        List<String> searchedPlaces = this.keywordSearchService.searchByKeyword(query);
+
+        return toPlaceSearchResultDto(searchedPlaces);
+    }
+
+    private PlaceSearchResultDto toPlaceSearchResultDto(List<String> searchedPlaces) {
+        List<PlaceDto> placeDtos = new ArrayList<>();
+        for(String place : searchedPlaces) {
+            placeDtos.add(PlaceDto.builder().title(place).build());
+        }
 
         return PlaceSearchResultDto.builder()
-                .places(Arrays.asList(PlaceDto.builder().title(query).build()))
+                .places(placeDtos)
                 .build();
     }
 }
