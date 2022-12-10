@@ -2,6 +2,7 @@ package com.mh.placesearch.controller;
 
 import com.mh.placesearch.controller.dto.PlaceDto;
 import com.mh.placesearch.controller.dto.PlaceSearchResultDto;
+import com.mh.placesearch.service.KeywordSearchService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,6 +13,12 @@ import java.util.Arrays;
 @RestController
 @RequestMapping("/v1")
 public class PlaceSearchController {
+
+    private final KeywordSearchService keywordSearchService;
+
+    public PlaceSearchController(KeywordSearchService keywordSearchService) {
+        this.keywordSearchService = keywordSearchService;
+    }
 
     @GetMapping("/place")
     PlaceSearchResultDto searchByKeyword(@RequestParam("q") String query) {

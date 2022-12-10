@@ -8,8 +8,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 public class PlaceSearchApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PlaceSearchApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(PlaceSearchApplication.class, args);
+    }
 
 }
