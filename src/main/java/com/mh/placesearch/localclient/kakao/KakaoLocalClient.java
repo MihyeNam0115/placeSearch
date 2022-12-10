@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "kakaoLocalClient", url = "https://dapi.kakao.com/v2/local")
 public interface KakaoLocalClient {
-    @GetMapping(
-            value = "/search/keyword.json",
-            headers = "Authorization=KakaoAK d444bf159502acc9926acb04f9da3408")
-    KakaoLocalKeywordSearchDto searchByKeyword(
-            @RequestParam String query, @RequestParam Integer size);
+  @GetMapping(
+      value = "/search/keyword.json",
+      headers = "Authorization=KakaoAK d444bf159502acc9926acb04f9da3408")
+  KakaoLocalKeywordSearchDto searchByKeyword(
+      @RequestParam String query, @RequestParam Integer size);
 }
