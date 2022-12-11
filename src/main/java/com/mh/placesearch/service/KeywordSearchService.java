@@ -4,6 +4,7 @@ import com.mh.placesearch.searchservice.SearchService;
 import lombok.Builder;
 import lombok.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,9 +13,11 @@ import java.util.stream.Collectors;
 public class KeywordSearchService {
 
     private final List<SearchService> searchEngines;
+    private final KeywordRankingService keywordRankingService;
 
-    public KeywordSearchService(final List<SearchService> searchEgnines) {
+    public KeywordSearchService(final List<SearchService> searchEgnines, KeywordRankingService keywordRankingService) {
         this.searchEngines = searchEgnines;
+        this.keywordRankingService = keywordRankingService;
     }
 
     public List<String> searchByKeyword(String keyword) {
@@ -27,6 +30,14 @@ public class KeywordSearchService {
     }
 
     private List<SearchResult> searchAndGetherByKeyword(String keyword) {
+        if (ObjectUtils.isEmpty(keyword)) {
+            return Collections.emptyList();
+        }
+
+        if (!this.keywordRankingService.updateKeywordCountData(keyword)) {
+            return Collections.emptyList();
+        }
+
         List<SearchResult> searchResults = new ArrayList<>();
 
         for (SearchService searchService : searchEngines) {
