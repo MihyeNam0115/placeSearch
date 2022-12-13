@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 @Service
 public class KeywordSearchService {
 
+    private static final int DEFAULT_MAX_ITEM_COUNT_PER_SERVICE = 5;
     private final List<SearchService> searchEngines;
     private final KeywordRankingService keywordRankingService;
 
@@ -22,14 +23,15 @@ public class KeywordSearchService {
 
     public List<String> searchByKeyword(String keyword) {
 
-        List<SearchResult> searchResults = searchAndGetherByKeyword(keyword);
+        List<List<String>> orderedAllSearchResults = searchAndGetherByKeywordWithOrdering(keyword);
+        List<List<String>> orderedSearchResults = applyMaxNCountPolicy(orderedAllSearchResults);
 
-        List<String> orderedPlaces = sortAndDistinctSearchResults(searchResults);
+        List<String> orderedPlaces = applyDistinctPolicy(orderedSearchResults);
 
         return orderedPlaces;
     }
 
-    private List<SearchResult> searchAndGetherByKeyword(String keyword) {
+    private List<List<String>> searchAndGetherByKeywordWithOrdering(String keyword) {
         if (ObjectUtils.isEmpty(keyword)) {
             return Collections.emptyList();
         }
@@ -49,11 +51,40 @@ public class KeywordSearchService {
                     .places(places)
                     .build());
         }
-        return searchResults;
+
+        return sortByServerPriority(searchResults);
     }
 
-    private List<String> sortAndDistinctSearchResults(List<SearchResult> searchResults) {
-        List<List<String>> orderedSearchResults = flatAndOrderedSearchResult(searchResults);
+    private List<List<String>> applyMaxNCountPolicy(List<List<String>> orgOrderedSearchItems) {
+        int numberOfLower = 0;
+        for(List<String> each : orgOrderedSearchItems) {
+            if(each.size() < DEFAULT_MAX_ITEM_COUNT_PER_SERVICE) {
+                numberOfLower = DEFAULT_MAX_ITEM_COUNT_PER_SERVICE - each.size();
+            }
+        }
+
+        if(numberOfLower == 0 ){
+            return orgOrderedSearchItems;
+        }
+
+        List<List<String>> orderedSearchItems = new ArrayList<>();
+        for(List<String> each : orgOrderedSearchItems) {
+            if( each.size() > DEFAULT_MAX_ITEM_COUNT_PER_SERVICE){
+                int overCount = each.size() - DEFAULT_MAX_ITEM_COUNT_PER_SERVICE;
+                if(overCount > numberOfLower) {
+                    orderedSearchItems.add(each.subList(0, DEFAULT_MAX_ITEM_COUNT_PER_SERVICE + numberOfLower));
+                }else {
+                    orderedSearchItems.add(each);
+                }
+            }else{
+                orderedSearchItems.add(each);
+            }
+        }
+
+        return orderedSearchItems;
+    }
+
+    private List<String> applyDistinctPolicy(List<List<String>> orderedSearchResults) {
 
         Map<String, Integer> placeAndCountMap = new LinkedHashMap<>();
 
@@ -76,7 +107,7 @@ public class KeywordSearchService {
         return result;
     }
 
-    private List<List<String>> flatAndOrderedSearchResult(List<SearchResult> searchResults) {
+    private List<List<String>> sortByServerPriority(List<SearchResult> searchResults) {
         Map<Integer, List<List<String>>> sortedResultsMap = new TreeMap<>();
 
         for (SearchResult searchResult : searchResults) {

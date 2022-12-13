@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Component
 public class NaverSearchService implements SearchService {
 
-    private static final int MAX_COUNT = 5;
+    private static final int MAX_COUNT = 10;
 
     private final int priority = 1;
     private final NaverLocalClient naverLocalClient;

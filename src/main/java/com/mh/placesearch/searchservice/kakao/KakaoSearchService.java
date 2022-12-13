@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Component
 public class KakaoSearchService implements SearchService {
 
-    private static final int MAX_COUNT = 5;
+    private static final int MAX_COUNT = 10;
 
     private final int priority = 0;
     private final KakaoLocalClient kakaoLocalClient;
