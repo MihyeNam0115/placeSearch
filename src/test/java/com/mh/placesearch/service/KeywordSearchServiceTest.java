@@ -108,7 +108,7 @@ class KeywordSearchServiceTest {
         KeywordSearchService service = new KeywordSearchService(searchServices, keywordRankingService);
         List<String> results = service.searchByKeyword("테스트");
         assertThat(results)
-//                .hasSize(10)
+                .hasSize(10)
                 .isEqualTo(Arrays.asList("테스트_A1", "테스트_A2", "테스트_A3", "테스트_A4", "테스트_A5", "테스트_A6", "테스트_A7", "테스트_B1", "테스트_B2", "테스트_B3"));
     }
 
@@ -122,5 +122,17 @@ class KeywordSearchServiceTest {
         List<String> results = service.searchByKeyword("테스트");
         assertThat(results).hasSize(10)
                 .isEqualTo(Arrays.asList("테스트_B1", "테스트_B2", "테스트_B3", "테스트_A1", "테스트_A2", "테스트_A3", "테스트_A4", "테스트_A5", "테스트_A6", "테스트_A7"));
+    }
+
+    @Test
+    void searchByKeyword_when9ItemsFromAService9ItemsFromBService_shouldReturn10Items() {
+        List<SearchService> searchServices = new ArrayList<>();
+        searchServices.add(newBuildService(Arrays.asList("테스트_A1", "테스트_A2", "테스트_A3", "테스트_A4", "테스트_A5", "테스트_A6", "테스트_A7" , "테스트_A8", "테스트_A9"), 1));
+        searchServices.add(newBuildService(Arrays.asList("테스트_B1", "테스트_B2", "테스트_B3", "테스트_B4", "테스트_B5", "테스트_B6", "테스트_B7" , "테스트_B8", "테스트_B9"), 2));
+
+        KeywordSearchService service = new KeywordSearchService(searchServices, keywordRankingService);
+        List<String> results = service.searchByKeyword("테스트");
+        assertThat(results).hasSize(10)
+                .isEqualTo(Arrays.asList("테스트_A1", "테스트_A2", "테스트_A3", "테스트_A4", "테스트_A5", "테스트_B1", "테스트_B2", "테스트_B3", "테스트_B4", "테스트_B5"));
     }
 }

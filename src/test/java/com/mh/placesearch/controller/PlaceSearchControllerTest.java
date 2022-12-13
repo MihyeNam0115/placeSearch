@@ -4,9 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
@@ -17,6 +15,7 @@ import static org.hamcrest.Matchers.notNullValue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class PlaceSearchControllerTest {
 
     @LocalServerPort
@@ -74,6 +73,7 @@ class PlaceSearchControllerTest {
     }
 
     @Test
+    @Order(1)
     void keywordRanking_whenAfterSearch_shouldReturn200WithKeywords() {
         String newKeyword = RandomStringUtils.randomAlphanumeric(20);
         RestAssured.given()
@@ -91,9 +91,20 @@ class PlaceSearchControllerTest {
     }
 
     @Test
+    @Order(2)
     void keywordRanking_whenAfterMultipleSearch_shouldReturn200WithKeywords() {
         String newKeyword1 = RandomStringUtils.randomAlphanumeric(20);
         String newKeyword2 = RandomStringUtils.randomAlphanumeric(20);
+
+        RestAssured.given()
+                .queryParam("q", newKeyword1)
+                .when().get("/v1/place")
+                .then().assertThat().statusCode(200);
+
+        RestAssured.given()
+                .queryParam("q", newKeyword2)
+                .when().get("/v1/place")
+                .then().assertThat().statusCode(200);
 
         RestAssured.given()
                 .queryParam("q", newKeyword1)
@@ -115,9 +126,9 @@ class PlaceSearchControllerTest {
                 .then().assertThat().statusCode(200)
                 .body("keywords", notNullValue())
                 .body("keywords[0].keyword", equalTo(newKeyword1))
-                .body("keywords[0].count", equalTo(2))
+                .body("keywords[0].count", equalTo(3))
                 .body("keywords[1].keyword", equalTo(newKeyword2))
-                .body("keywords[1].count", equalTo(1))
+                .body("keywords[1].count", equalTo(2))
         ;
     }
 }

@@ -63,18 +63,16 @@ public class KeywordSearchService {
             }
         }
 
-        if(numberOfLower == 0 ){
-            return orgOrderedSearchItems;
-        }
-
         List<List<String>> orderedSearchItems = new ArrayList<>();
         for(List<String> each : orgOrderedSearchItems) {
             if( each.size() > DEFAULT_MAX_ITEM_COUNT_PER_SERVICE){
                 int overCount = each.size() - DEFAULT_MAX_ITEM_COUNT_PER_SERVICE;
                 if(overCount > numberOfLower) {
                     orderedSearchItems.add(each.subList(0, DEFAULT_MAX_ITEM_COUNT_PER_SERVICE + numberOfLower));
+                    numberOfLower = 0;
                 }else {
                     orderedSearchItems.add(each);
+                    numberOfLower -= overCount;
                 }
             }else{
                 orderedSearchItems.add(each);
