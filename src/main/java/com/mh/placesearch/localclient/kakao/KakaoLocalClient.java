@@ -5,7 +5,9 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "kakaoLocalClient", url = "https://dapi.kakao.com")
+@FeignClient(name = "kakaoLocalClient"
+        , url = "https://dapi.kakao.com"
+        , fallbackFactory = KakaoLocalClientFallbackFactory.class)
 public interface KakaoLocalClient {
     @GetMapping(
             value = "/v2/local/search/keyword.json",

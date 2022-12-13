@@ -38,10 +38,9 @@ class KakaoLocalClientTest {
     }
 
     @Test
-    void searchAddress_whenEmptyKeyword_shouldThrowBadRequestException() {
-        assertThatThrownBy(() -> kakaoLocalClient.searchByKeyword("", 5))
-                .isInstanceOf(FeignException.BadRequest.class)
-                .hasMessageContaining("MissingParameter");
+    void searchAddress_whenEmptyKeyword_shouldReturn0() {
+        KakaoLocalKeywordSearchDto result = kakaoLocalClient.searchByKeyword("", 5);
+        assertThat(result.getDocuments()).hasSize(0);
     }
 
     @Test

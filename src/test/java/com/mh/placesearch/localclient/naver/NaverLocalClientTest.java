@@ -1,14 +1,11 @@
 package com.mh.placesearch.localclient.naver;
 
-
 import com.mh.placesearch.localclient.naver.dto.NaverLocalKeywordSearchDto;
-import feign.FeignException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(
         properties = {
@@ -39,16 +36,14 @@ class NaverLocalClientTest {
     }
 
     @Test
-    void searchAddress_whenEmptyKeyword_shouldThrowBadRequestException() {
-        assertThatThrownBy(() -> naverLocalClient.searchByKeyword("", 5))
-                .isInstanceOf(FeignException.BadRequest.class)
-                .hasMessageContaining("SE01");
+    void searchAddress_whenEmptyKeyword_shouldReturn0() {
+        NaverLocalKeywordSearchDto result = naverLocalClient.searchByKeyword("", 5);
+        assertThat(result.getItems()).hasSize(0);
     }
 
     @Test
-    void searchAddress_whenOnlySpaceKeyword_shouldThrowBadRequestException() {
-        assertThatThrownBy(() -> naverLocalClient.searchByKeyword(" ", 5))
-                .isInstanceOf(FeignException.BadRequest.class)
-                .hasMessageContaining("SE01");
+    void searchAddress_whenOnlySpaceKeyword_shouldReturn0() {
+        NaverLocalKeywordSearchDto result = naverLocalClient.searchByKeyword(" ", 5);
+        assertThat(result.getItems()).hasSize(0);
     }
 }
